@@ -88,7 +88,13 @@ fileInput.addEventListener('change', e => {
 
   if (window._currentView) switchView(window._currentView, true);
 });
+// ── Chart helpers ─────────────────────────────
+function destroyChart(id) {
+  if (typeof Chart === 'undefined') return;
 
+  const c = Chart.getChart(id);
+  if (c) c.destroy();
+}
 // Drag-drop
 uploadZone.addEventListener('dragover', e => {
   e.preventDefault();
