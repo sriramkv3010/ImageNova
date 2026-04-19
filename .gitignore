@@ -1,0 +1,46 @@
+# 🔥 Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# 🔥 Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 🔥 Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# 🔥 Environment variables
+.env
+
+# 🔥 Logs
+*.log
+
+# 🔥 OS files
+.DS_Store
+Thumbs.db
+
+# 🔥 VS Code / IDE
+.vscode/
+.idea/
+
+# 🔥 Build files
+build/
+dist/
+*.egg-info/
+
+# 🔥 ML / Large files (optional)
+*.h5
+*.pt
+*.pth
+*.ckpt
+
+# 🔥 SQLite / DB
+db.sqlite3
+
+# 🔥 Coverage reports
+.coverage
+htmlcov/
