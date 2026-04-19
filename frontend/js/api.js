@@ -2,7 +2,7 @@
 // api.js — Global state, API, Background Canvas
 // ═══════════════════════════════════════════════
 
-// ✅ FIXED: Always point to Render backend
+// ✅ Always use deployed backend
 const API_BASE = "https://imagenova.onrender.com";
 
 window._uploadedFile = null;
@@ -10,9 +10,21 @@ window.views = {};
 
 // ── API Call ──────────────────────────────────
 async function apiCall(endpoint, file = null, params = {}) {
+
+  // 🚨 Prevent bad requests
+  if (!file) {
+    showToast("Upload image first", true);
+    throw new Error("No image uploaded");
+  }
+
   const form = new FormData();
-  if (file) form.append('file', file);
-  Object.entries(params).forEach(([k, v]) => form.append(k, String(v)));
+  form.append('file', file);
+
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) {
+      form.append(k, String(v));
+    }
+  });
 
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: 'POST',
@@ -39,15 +51,12 @@ async function checkHealth() {
     if (dot) dot.className = 'status-dot ok';
     if (txt) txt.textContent = 'API Ready';
 
-    return true;
   } catch (e) {
     const dot = document.getElementById('status-dot');
     const txt = document.getElementById('api-status-text');
 
     if (dot) dot.className = 'status-dot err';
     if (txt) txt.textContent = 'API Offline';
-
-    return false;
   }
 }
 checkHealth();
@@ -80,7 +89,7 @@ fileInput.addEventListener('change', e => {
   if (window._currentView) switchView(window._currentView, true);
 });
 
-// Drag and drop
+// Drag-drop
 uploadZone.addEventListener('dragover', e => {
   e.preventDefault();
   uploadZone.classList.add('dragging');
@@ -113,79 +122,53 @@ function clearUpload() {
   if (window._currentView) switchView(window._currentView, true);
 }
 
-// ── Loading helpers ───────────────────────────
-function showLoading(elId) {
-  const el = document.getElementById(elId);
+// ── Helpers ───────────────────────────────────
+function showLoading(id) {
+  const el = document.getElementById(id);
   if (!el) return;
-
-  el.style.position = 'relative';
 
   const ov = document.createElement('div');
   ov.className = 'loading-overlay';
-  ov.id = 'lov-' + elId;
   ov.innerHTML = '<div class="spinner"></div>';
+  ov.id = 'lov-' + id;
 
   el.appendChild(ov);
 }
 
-function hideLoading(elId) {
-  const ov = document.getElementById('lov-' + elId);
+function hideLoading(id) {
+  const ov = document.getElementById('lov-' + id);
   if (ov) ov.remove();
 }
 
-// ── Image setter ──────────────────────────────
 function setImage(id, b64) {
   const el = document.getElementById(id);
-  if (el && b64) {
-    el.src = 'data:image/png;base64,' + b64;
-  }
+  if (el && b64) el.src = 'data:image/png;base64,' + b64;
 }
 
-// ── Formatters ────────────────────────────────
-function fmtNum(n, dec = 2) {
-  if (typeof n !== 'number') return String(n);
-  return n.toFixed(dec);
+function fmtNum(n, d = 2) {
+  return typeof n === 'number' ? n.toFixed(d) : n;
 }
 
-function fmtBytes(b) {
-  if (b < 1024) return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-  return (b / 1048576).toFixed(1) + ' MB';
-}
-
-// ── Toast ─────────────────────────────────────
+// Toast
 let _toastTimeout;
-
-function showToast(msg, isErr = false) {
+function showToast(msg, err = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast' + (isErr ? ' err' : '') + ' show';
+  t.className = 'toast' + (err ? ' err' : '') + ' show';
 
   clearTimeout(_toastTimeout);
-
-  _toastTimeout = setTimeout(() => {
-    t.className = 'toast';
-  }, 3500);
+  _toastTimeout = setTimeout(() => t.className = 'toast', 3000);
 }
 
-// ── Error display ─────────────────────────────
-function showError(containerId, msg) {
-  hideLoading(containerId);
-
-  const el = document.getElementById(containerId);
+// Error display
+function showError(id, msg) {
+  hideLoading(id);
+  const el = document.getElementById(id);
   if (el) {
     el.innerHTML = `
       <div class="error-msg">
         ⚠ ${msg}<br>
-        <small>Backend not reachable</small>
+        <small>Upload image before running</small>
       </div>`;
   }
-
-  showToast('Error: ' + msg, true);
-}
-
-// ── Chart helpers ─────────────────────────────
-function destroyChart(id) {
-  const c = Chart.getChart(id);
-  if (c) c.destroy();
 }
