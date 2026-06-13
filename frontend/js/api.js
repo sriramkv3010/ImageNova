@@ -1,17 +1,10 @@
-// ═══════════════════════════════════════════════
-// api.js — Global state, API, Background Canvas
-// ═══════════════════════════════════════════════
-
-// ✅ Always use deployed backend
 const API_BASE = "https://imagenova.onrender.com";
 
 window._uploadedFile = null;
 window.views = {};
 
-// ── API Call ──────────────────────────────────
 async function apiCall(endpoint, file = null, params = {}) {
 
-  // 🚨 Prevent bad requests
   if (!file) {
     showToast("Upload image first", true);
     throw new Error("No image uploaded");
@@ -39,7 +32,6 @@ async function apiCall(endpoint, file = null, params = {}) {
   return res.json();
 }
 
-// ── Health check ──────────────────────────────
 async function checkHealth() {
   try {
     const r = await fetch(`${API_BASE}/api/health`);
@@ -62,7 +54,6 @@ async function checkHealth() {
 checkHealth();
 setInterval(checkHealth, 15000);
 
-// ── Upload handling ───────────────────────────
 const fileInput = document.getElementById('file-input');
 const uploadTrigger = document.getElementById('upload-trigger');
 const uploadZone = document.getElementById('upload-zone');
@@ -88,14 +79,14 @@ fileInput.addEventListener('change', e => {
 
   if (window._currentView) switchView(window._currentView, true);
 });
-// ── Chart helpers ─────────────────────────────
+
 function destroyChart(id) {
   if (typeof Chart === 'undefined') return;
 
   const c = Chart.getChart(id);
   if (c) c.destroy();
 }
-// Drag-drop
+
 uploadZone.addEventListener('dragover', e => {
   e.preventDefault();
   uploadZone.classList.add('dragging');
@@ -128,7 +119,6 @@ function clearUpload() {
   if (window._currentView) switchView(window._currentView, true);
 }
 
-// ── Helpers ───────────────────────────────────
 function showLoading(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -155,7 +145,6 @@ function fmtNum(n, d = 2) {
   return typeof n === 'number' ? n.toFixed(d) : n;
 }
 
-// Toast
 let _toastTimeout;
 function showToast(msg, err = false) {
   const t = document.getElementById('toast');
@@ -166,7 +155,6 @@ function showToast(msg, err = false) {
   _toastTimeout = setTimeout(() => t.className = 'toast', 3000);
 }
 
-// Error display
 function showError(id, msg) {
   hideLoading(id);
   const el = document.getElementById(id);
