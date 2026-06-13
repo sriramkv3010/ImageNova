@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════
-// app.js — Router & Shell
-// ═══════════════════════════════════════════════
-
 window._currentView = null;
 let _sidebarOpen = true;
 
@@ -26,29 +22,23 @@ function switchView(name, forceReload = false) {
   if (window._currentView === name && !forceReload) return;
   window._currentView = name;
 
-  // Update nav
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.toggle('active', el.dataset.view === name);
   });
 
-  // Update breadcrumb
   const meta = VIEW_META[name] || {};
   document.getElementById('bc-chapter').textContent = meta.chapter || '';
   document.getElementById('bc-algo').textContent = meta.title || name;
   document.getElementById('kbd-hints').textContent = meta.kbdHints || '';
 
-  // Hide splash
   const splash = document.getElementById('welcome-splash');
   if (splash) splash.style.display = 'none';
 
-  // Get or create view container
   const vc = document.getElementById('views-container');
   
-  // Remove old active view
   const old = vc.querySelector('.view-panel');
   if (old) old.remove();
 
-  // Create new view
   const viewDef = window.views[name];
   if (!viewDef) {
     vc.innerHTML = '<div class="error-msg">View not found: ' + name + '</div>';
@@ -60,10 +50,8 @@ function switchView(name, forceReload = false) {
   wrapper.innerHTML = viewDef.render();
   vc.appendChild(wrapper);
 
-  // Scroll to top
   vc.scrollTop = 0;
 
-  // Init view
   requestAnimationFrame(() => {
     if (viewDef.init) viewDef.init();
   });
@@ -82,7 +70,6 @@ function toggleSidebar() {
   }
 }
 
-// Keyboard shortcuts
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'Escape') toggleSidebar();
@@ -103,7 +90,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ── Helper: make header HTML ──────────────────
 function makeViewHeader(chapterTag, title, desc) {
   return `
     <div class="view-header">
