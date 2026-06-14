@@ -9,10 +9,8 @@
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <!-- Animated background canvas -->
   <canvas id="bg-canvas"></canvas>
 
-  <!-- SIDEBAR -->
   <nav id="sidebar" class="sidebar-open">
     <div class="sidebar-brand">
       <div class="brand-logo">
@@ -29,7 +27,6 @@
       </div>
     </div>
 
-    <!-- Image upload -->
     <div class="upload-zone" id="upload-zone">
       <input type="file" id="file-input" accept="image/*" hidden/>
       <div class="upload-inner" id="upload-trigger">
@@ -47,7 +44,6 @@
       <div class="upload-clear" id="upload-clear" style="display:none" onclick="clearUpload()">✕ Clear</div>
     </div>
 
-    <!-- Navigation -->
     <div class="nav-scroll">
       <div class="chapter-group">
         <div class="chapter-header">
@@ -122,9 +118,7 @@
     </div>
   </nav>
 
-  <!-- MAIN CONTENT -->
   <main id="main-content">
-    <!-- Topbar -->
     <header id="topbar">
       <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -142,10 +136,7 @@
         <div class="kbd-hints" id="kbd-hints"></div>
       </div>
     </header>
-
-    <!-- View container -->
     <div id="views-container">
-      <!-- Welcome splash -->
       <div id="welcome-splash" class="splash">
         <div class="splash-bg-text">DIP</div>
         <div class="splash-content">
@@ -171,11 +162,7 @@
       </div>
     </div>
   </main>
-
-  <!-- Error toast -->
   <div id="toast" class="toast"></div>
-
-  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
