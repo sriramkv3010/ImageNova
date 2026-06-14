@@ -19,8 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Utility ──────────────────────────────────────────────────────────────────
-
 def img_to_b64(arr: np.ndarray, mode="L") -> str:
     arr = np.clip(arr, 0, 255).astype(np.uint8)
     img = Image.fromarray(arr, mode)
@@ -50,8 +48,6 @@ def make_test_image(size=256) -> np.ndarray:
         for j in range(size):
             img[i,j] += 30 * np.sin(2*np.pi*i/32) * np.cos(2*np.pi*j/32)
     return np.clip(img, 0, 255)
-
-# ─── CHAPTER 7: Haar & Wavelet ────────────────────────────────────────────────
 
 @app.post("/api/haar/decompose")
 async def haar_decompose(file: Optional[UploadFile] = File(None), levels: int = 3):
@@ -87,7 +83,6 @@ async def haar_decompose(file: Optional[UploadFile] = File(None), levels: int = 
         })
         current = cA
 
-    # Full subband layout image
     full_layout = build_wavelet_layout(img, levels, 'haar')
 
     return {
@@ -220,8 +215,6 @@ def compute_psnr(original, reconstructed):
         return 100.0
     return 20 * np.log10(255.0 / np.sqrt(mse))
 
-# ─── CHAPTER 8: Compression ───────────────────────────────────────────────────
-
 @app.post("/api/dct/block")
 async def dct_block_coding(
     file: Optional[UploadFile] = File(None),
@@ -235,8 +228,6 @@ async def dct_block_coding(
 
     quality = max(1, min(100, quality))
     q_scale = max(1, (100 - quality) / 10 + 1)
-
-    # Standard JPEG-like quantization matrix
     Q_base = np.array([
         [16,11,10,16,24,40,51,61],
         [12,12,14,19,26,58,60,55],
@@ -255,7 +246,6 @@ async def dct_block_coding(
     dct_full = np.zeros_like(img)
     quantized_full = np.zeros_like(img)
 
-    # Process 8x8 blocks
     blocks_dct = []
     for i in range(0, h - 7, 8):
         for j in range(0, w - 7, 8):
@@ -373,7 +363,7 @@ def build_huffman_tree(freq):
     return {"nodes": nodes, "edges": edges, "root_node": root_node}
 
 def get_codes(node_id, prefix, codes):
-    pass  # simplified - codes built during tree construction above
+    pass 
 
 @app.post("/api/bitplane/decompose")
 async def bitplane_decompose(file: Optional[UploadFile] = File(None)):
@@ -393,8 +383,6 @@ async def bitplane_decompose(file: Optional[UploadFile] = File(None)):
             "image": img_to_b64(plane),
             "ones_percent": float(np.sum(plane > 0) / plane.size * 100)
         })
-
-    # Progressive reconstruction
     reconstructions = []
     for keep in range(8, 0, -1):
         mask = 0
@@ -492,8 +480,6 @@ async def wavelet_coding(
         "compression_ratio": float(100 / max(nonzero_pct, 0.1)),
         "threshold_value": float(threshold_val)
     }
-
-# ─── CHAPTER 10: Segmentation ─────────────────────────────────────────────────
 
 @app.post("/api/padding/visualize")
 async def padding_visualize(
@@ -743,12 +729,10 @@ async def kmeans_segment(
     pixels = img.flatten().reshape(-1, 1).astype(np.float64)
 
     np.random.seed(42)
-    # centers shape: (k,) — 1D since pixels are 1D grayscale
     centers = pixels[np.random.choice(len(pixels), k, replace=False)].flatten()
 
     history = []
     for iteration in range(max_iter):
-        # dists: (n_pixels, k)
         dists = np.abs(pixels.flatten()[:, None] - centers[None, :])
         labels = np.argmin(dists, axis=1)
 
